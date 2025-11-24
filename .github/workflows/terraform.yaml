@@ -1,4 +1,4 @@
-name: Terraform Pipeline
+name: Terraform Validate
 
 on:
   push:
@@ -6,8 +6,9 @@ on:
   pull_request:
 
 jobs:
-  plan:
+  validate:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -15,25 +16,8 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Terraform Init
-        run: terraform init
+      - name: Terraform Init (no backend)
+        run: terraform init -backend=false
 
-      - name: Terraform Plan
-        run: terraform plan
-
-  apply:
-    needs: plan
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+      - name: Terraform Validate
+        run: terraform validate
